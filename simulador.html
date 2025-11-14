@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Test Slot Pesos</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
+body { background:#1c1c1c; color:#f0f0f0; padding:1rem; display:flex; justify-content:center; }
+.container {
+  width:100%;
+  max-width:480px;
+  background:#2a2a2a;
+  padding:1rem;
+  border-radius:0.5rem;
+  box-shadow:0 0 1rem rgba(0,0,0,0.5);
+}
+h2 { text-align:center; color:#FFD700; margin-bottom:0.8rem; font-size:1.1rem; }
+.symbols-config { display:flex; flex-direction:column; gap:0.8rem; margin-bottom:1rem; }
+.symbol-row { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+.symbol-row span { flex:1 0 70px; font-weight:bold; color:#FFD700; font-size:0.9rem; }
+.symbol-row input {
+  flex:1 0 50px;
+  padding:0.3rem;
+  border-radius:0.2rem;
+  border:none;
+  background:#333;
+  color:#f0f0f0;
+  text-align:center;
+  font-size:0.85rem;
+}
+button {
+  width:100%;
+  padding:0.5rem;
+  border:none;
+  border-radius:0.35rem;
+  background:#25d366;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover { background:#20b857; }
+pre {
+  margin-top:0.8rem;
+  background:#111;
+  padding:0.6rem;
+  border-radius:0.35rem;
+  overflow-x:auto;
+  max-height:250px;
+  white-space:pre-wrap;
+  font-size:0.82rem;
+}
+@media (max-width:480px){
+  .symbol-row { flex-direction:column; align-items:flex-start; }
+  .symbol-row input { flex:1 0 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Configuração de Pesos e Multiplicadores</h2>
+
+  <div class="symbols-config">
+    <div class="symbol-row">
+      <span>Anchor</span>
+      <input type="number" id="w-anchor" value="75" placeholder="Peso">
+      <input type="number" id="m3-anchor" value="0.3" step="0.1" placeholder="x3">
+      <input type="number" id="m4-anchor" value="1.5" step="0.1" placeholder="x4">
+    </div>
+    <div class="symbol-row">
+      <span>Gem</span>
+      <input type="number" id="w-gem" value="40" placeholder="Peso">
+      <input type="number" id="m3-gem" value="4" step="0.1" placeholder="x3">
+      <input type="number" id="m4-gem" value="8" step="0.1" placeholder="x4">
+    </div>
+    <div class="symbol-row">
+      <span>Cowboy</span>
+      <input type="number" id="w-cowboy" value="15" placeholder="Peso">
+      <input type="number" id="m3-cowboy" value="50" step="0.1" placeholder="x3">
+      <input type="number" id="m4-cowboy" value="150" step="0.1" placeholder="x4">
+    </div>
+    <div class="symbol-row">
+      <span>Skull</span>
+      <input type="number" id="w-skull" value="10" placeholder="Peso">
+      <input type="number" id="m3-skull" value="500" step="1" placeholder="x3">
+      <input type="number" id="m4-skull" value="5000" step="1" placeholder="x4">
+    </div>
+  </div>
+
+  <div class="symbol-row">
+    <span>Jogadores</span>
+    <input type="number" id="num-players" value="100" placeholder="Nº jogadores">
+  </div>
+  <div class="symbol-row">
+    <span>Giros por jogador</span>
+    <input type="number" id="spins-player" value="20" placeholder="Giros">
+  </div>
+
+  <button id="runSim">Rodar</button>
+  <pre id="output"></pre>
+</div>
+
+
+<script>
+const symbols = ['fa-anchor','fa-gem','fa-hat-cowboy','fa-skull-crossbones'];
+const bet = 10;
+const ROWS = 3;
+const COLS = 4;
+
+function getConfig(){
+  return {
+    'fa-anchor': { cls:'fa-anchor', weight: parseInt(document.getElementById('w-anchor').value), mult3: parseFloat(document.getElementById('m3-anchor').value), mult4: parseFloat(document.getElementById('m4-anchor').value) },
+    'fa-gem': { cls:'fa-gem', weight: parseInt(document.getElementById('w-gem').value), mult3: parseFloat(document.getElementById('m3-gem').value), mult4: parseFloat(document.getElementById('m4-gem').value) },
+    'fa-hat-cowboy': { cls:'fa-hat-cowboy', weight: parseInt(document.getElementById('w-cowboy').value), mult3: parseFloat(document.getElementById('m3-cowboy').value), mult4: parseFloat(document.getElementById('m4-cowboy').value) },
+    'fa-skull-crossbones': { cls:'fa-skull-crossbones', weight: parseInt(document.getElementById('w-skull').value), mult3: parseFloat(document.getElementById('m3-skull').value), mult4: parseFloat(document.getElementById('m4-skull').value) }
+  };
+}
+
+function buildWeightedArray(config){
+  const arr = [];
+  symbols.forEach(sym=>{
+    for(let i=0;i<config[sym].weight;i++) arr.push(sym);
+  });
+  return arr;
+}
+
+function getRandomSymbol(weightedArr){
+  return weightedArr[Math.floor(Math.random()*weightedArr.length)];
+}
+
+/**
+ * Lógica de cálculo de vitória (Adaptada de computeWin do app.js)
+ */
+function calculateWin(results, config){
+  let totalWin = 0;
+  let currentWins = {};
+  symbols.forEach(s => currentWins[s] = 0);
+
+  // ---------------------------
+  // 1) Horizontais (Linhas 0, 1, 2)
+  // ---------------------------
+  for (let row = 0; row < ROWS; row++) {
+    const first = results[0][row];
+    const matchedPayout = config[first];
+    if (!matchedPayout) continue;
+
+    let count = 1;
+    for (let col = 1; col < COLS; col++) {
+      if (results[col][row] === first) count++;
+      else break;
+    }
+
+    if (count >= 3) {
+      const mult = (count === 3 ? matchedPayout.mult3 : matchedPayout.mult4);
+      const win = bet * mult;
+      totalWin += win;
+      currentWins[first] += win;
+    }
+  }
+
+  // ---------------------------
+  // 2) Diagonais Simples
+  // ---------------------------
+  const diagonalPatterns = [];
+
+  // principal ↘ (0,0), (1,1), (2,2) - só 3 colunas/linhas
+  if(COLS >= 3 && ROWS >= 3) {
+    diagonalPatterns.push(Array.from({ length: 3 }, (_, i) => ({ col: i, row: i })));
+    // invertida ↗ (0,2), (1,1), (2,0)
+    diagonalPatterns.push(Array.from({ length: 3 }, (_, i) => ({ col: i, row: ROWS - 1 - i })));
+  }
+
+  // especial 1: 1:3 → 2:2 → 3:1 → 4:2 (Ajustado para 4 colunas)
+  if (COLS >= 4 && ROWS >= 3) {
+    diagonalPatterns.push([
+      { col: 0, row: 2 },
+      { col: 1, row: 1 },
+      { col: 2, row: 0 },
+      { col: 3, row: 1 },
+    ]);
+  }
+
+
+  diagonalPatterns.forEach(pattern => {
+    // Apenas checa padrões com 3 ou 4 símbolos
+    if(pattern.length < 3) return;
+
+    const first = results[pattern[0].col][pattern[0].row];
+    const payout = config[first];
+    if (!payout) return;
+
+    let matchCount = 1;
+    for (let i = 1; i < pattern.length; i++) {
+        if (results[pattern[i].col][pattern[i].row] === first) {
+            matchCount++;
+        } else {
+            break; // Se quebrar, não conta como linha de pagamento contínua
+        }
+    }
+
+    if (matchCount >= 3) {
+        const mult = matchCount === 3 ? payout.mult3 : payout.mult4;
+        const win = bet * mult;
+        totalWin += win;
+        currentWins[first] += win;
+    }
+  });
+
+
+  // ---------------------------
+  // 3) Zig-zag com backtracking (Corrige último cilindro)
+  // ---------------------------
+  function findZigzagPaths(results) {
+    const paths = [];
+
+    function dfs(col, row, path, symbol) {
+      path.push({ col, row });
+
+      if (col === COLS - 1) {
+        // Se chegou ao final, registra o caminho
+        if (path.length >= 3) paths.push([...path]);
+        path.pop();
+        return;
+      }
+
+      // Candidatos: Linha anterior, mesma, e linha posterior
+      const candidates = [row - 1, row, row + 1].filter(r => r >= 0 && r < ROWS);
+
+      let extended = false;
+
+      for (const r of candidates) {
+        if (results[col + 1] && results[col + 1][r] === symbol) {
+          extended = true;
+          dfs(col + 1, r, path, symbol);
+        }
+      }
+
+      // Se não houver extensão, mas o caminho já tem 3 ou mais, também registra
+      if (!extended && path.length >= 3) {
+        paths.push([...path]);
+      }
+
+      path.pop();
+    }
+
+    for (let startRow = 0; startRow < ROWS; startRow++) {
+      const symbol = results[0][startRow];
+      if (!config[symbol]) continue;
+      dfs(0, startRow, [], symbol);
+    }
+
+    return paths;
+  }
+
+  const zigPaths = findZigzagPaths(results);
+  zigPaths.forEach(path => {
+    const symbol = results[path[0].col][path[0].row];
+    const payout = config[symbol];
+
+    // O path.length já é o matchCount contínuo
+    const matchCount = path.length;
+    if (matchCount >= 3) {
+      const mult = matchCount === 3 ? payout.mult3 : payout.mult4;
+      const win = bet * mult;
+      totalWin += win;
+      currentWins[symbol] += win;
+    }
+  });
+
+  return { totalWin, currentWins };
+}
+
+function simulatePlayers(numPlayers, spinsPerPlayer){
+  const config = getConfig();
+  const weightedArr = buildWeightedArray(config);
+  let totalWin = 0;
+  const totalSpins = numPlayers * spinsPerPlayer;
+  const totalBet = totalSpins * bet;
+
+  const winsBySymbol = {'fa-anchor':0,'fa-gem':0,'fa-hat-cowboy':0,'fa-skull-crossbones':0};
+
+  for(let p=0; p<numPlayers; p++){
+    for(let s=0; s<spinsPerPlayer; s++){
+      // Gerar Resultado (4x3)
+      const results = [];
+      for(let col=0; col<COLS; col++){
+        const reelCol = [];
+        for(let row=0; row<ROWS; row++){
+          reelCol.push(getRandomSymbol(weightedArr));
+        }
+        results.push(reelCol);
+      }
+      
+      const winResult = calculateWin(results, config);
+      totalWin += winResult.totalWin;
+
+      // Acumula os ganhos em vez do número de vezes
+      symbols.forEach(s => winsBySymbol[s] += winResult.currentWins[s]);
+    }
+  }
+
+  const rtp = (totalWin / totalBet) * 100;
+  return {rtp, totalWin, totalBet, winsBySymbol};
+}
+
+document.getElementById('runSim').addEventListener('click', ()=>{
+  const numPlayers = parseInt(document.getElementById('num-players').value) || 1000; // Aumentei o default
+  const spinsPerPlayer = parseInt(document.getElementById('spins-player').value) || 1000; // Aumentei o default
+  
+  // Limpar ganhos por símbolo para ser mais preciso:
+  const config = getConfig();
+  const totalWeight = symbols.reduce((acc, sym) => acc + config[sym].weight, 0);
+
+  const res = simulatePlayers(numPlayers, spinsPerPlayer);
+  
+  const output = document.getElementById('output');
+  output.textContent = 
+    `--- Resultado da Simulação (${res.totalSpins} giros @ R$${bet}) ---\n` +
+    `RTP (Retorno Teórico): ${res.rtp.toFixed(4)}%\n` +
+    `Total Apostado: R$${res.totalBet.toFixed(2)}\n` +
+    `Total Ganho: R$${res.totalWin.toFixed(2)}\n` +
+    `\n--- Contribuição por Símbolo (Ganho Total) ---\n` +
+    symbols.map(s => {
+        const peso = config[s].weight;
+        const contrib = res.winsBySymbol[s] / res.totalWin * 100;
+        return `${s.split('-')[1].padEnd(7)} (Peso ${peso}/${totalWeight}): ${res.winsBySymbol[s].toFixed(2)} (${contrib.toFixed(2)}% do Ganho)`;
+    }).join('\n');
+});
+
+// Rodar simulação com as configurações padrão ao carregar (para teste)
+document.addEventListener('DOMContentLoaded', () => {
+    // Define os valores sugeridos do meu post anterior para o perfil médio
+    document.getElementById('w-anchor').value = 85;
+    document.getElementById('m3-anchor').value = 1.5;
+    document.getElementById('m4-anchor').value = 8;
+    
+    document.getElementById('w-gem').value = 35;
+    document.getElementById('m3-gem').value = 5;
+    document.getElementById('m4-gem').value = 20;
+
+    document.getElementById('w-cowboy').value = 15;
+    document.getElementById('m3-cowboy').value = 30;
+    document.getElementById('m4-cowboy').value = 120;
+
+    document.getElementById('w-skull').value = 5;
+    document.getElementById('m3-skull').value = 300;
+    document.getElementById('m4-skull').value = 1500;
+
+    // Aumenta o número de giros para melhor precisão (1 milhão de giros)
+    document.getElementById('num-players').value = 1000;
+    document.getElementById('spins-player').value = 1000;
+
+    // Não roda automaticamente, o usuário deve clicar em "Rodar"
+});
+
+</script>
+
+
+</body>
+</html>
