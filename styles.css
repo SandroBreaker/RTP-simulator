@@ -41,9 +41,9 @@ h2 {
 
 /* --- Configurações dos Símbolos --- */
 .symbols-config {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem; /* Espaçamento vertical aprimorado */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    gap: 0.8rem;
     margin-bottom: 1.5rem;
 }
 
