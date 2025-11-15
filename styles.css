@@ -1,57 +1,94 @@
-* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
-body { background:#1c1c1c; color:#f0f0f0; padding:1rem; display:flex; justify-content:center; }
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background:#121212; color:#f0f0f0; padding:1.5rem; display:flex; justify-content:center; }
 .container {
   width:100%;
-  max-width:480px;
-  background:#2a2a2a;
-  padding:1rem;
-  border-radius:0.5rem;
-  box-shadow:0 0 1rem rgba(0,0,0,0.5);
+  max-width:550px; /* Aumentado para melhor visualização */
+  background:#1e1e1e;
+  padding:1.5rem;
+  border-radius:0.75rem;
+  box-shadow:0 0 2rem rgba(0,0,0,0.7);
 }
-h2 { text-align:center; color:#FFD700; margin-bottom:0.8rem; font-size:1.1rem; }
-.symbols-config { display:flex; flex-direction:column; gap:0.8rem; margin-bottom:1rem; }
-.symbol-row { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
-.symbol-row span { flex:1 0 70px; font-weight:bold; color:#FFD700; font-size:0.9rem; }
+h2 { text-align:center; color:#4CAF50; margin-bottom:1rem; font-size:1.4rem; }
+.symbols-config { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.5rem; }
+
+.symbol-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; background: #2a2a2a; padding: 0.5rem; border-radius: 0.35rem; }
+.symbol-row span { flex:1 0 100px; font-weight:bold; color:#FFD700; font-size:0.95rem; display: flex; align-items: center; }
+.symbol-row span i { margin-right: 0.5rem; color: #4CAF50; }
+
+/* Estilo para destacar o símbolo que o algoritmo ajusta */
+.adjustable-symbol { 
+    border: 2px solid #FFD700;
+    background: #3a321e;
+    box-shadow: 0 0 10px #FFD70050;
+}
+
 .symbol-row input {
-  flex:1 0 50px;
-  padding:0.3rem;
-  border-radius:0.2rem;
-  border:none;
+  flex:1 0 60px;
+  padding:0.4rem;
+  border-radius:0.3rem;
+  border:1px solid #333;
   background:#333;
   color:#f0f0f0;
   text-align:center;
-  font-size:0.85rem;
+  font-size:0.9rem;
+  transition: border-color 0.3s;
 }
-button {
+.symbol-row input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Estilo do botão dinâmico */
+#toggleSim {
   width:100%;
-  padding:0.5rem;
+  padding:0.7rem;
   border:none;
   border-radius:0.35rem;
-  background:#25d366;
+  background:#4CAF50; /* Cor Rodar */
   color:#fff;
   font-weight:bold;
   cursor:pointer;
   transition:0.3s;
+  margin-top: 1rem;
 }
-button:hover { background:#20b857; }
+#toggleSim:hover { background:#388E3C; }
+#toggleSim.running { 
+    background:#D32F2F; /* Cor Parar */
+}
+#toggleSim.running:hover { background:#B71C1C; }
+
 pre {
-  margin-top:0.8rem;
-  background:#111;
-  padding:0.6rem;
+  margin-top:1rem;
+  background:#000;
+  padding:0.8rem;
   border-radius:0.35rem;
   overflow-x:auto;
-  max-height:250px;
+  max-height:200px;
   white-space:pre-wrap;
-  font-size:0.82rem;
+  font-size:0.85rem;
+  border: 1px solid #444;
 }
-@media (max-width:480px){
-  .symbol-row { flex-direction:column; align-items:flex-start; }
-  .symbol-row input { flex:1 0 100%; }
-}
+
 #simCanvas {
+  margin-top: 1rem;
   border-radius:0.5rem;
   background: #111;
   width: 100%;
-  height: 300px;
-  box-shadow: 0 0 0.5rem rgba(0,0,0,0.5);
+  height: 350px;
+  box-shadow: 0 0 1rem rgba(0,0,0,0.5);
+}
+
+.target-config {
+    margin-bottom: 1.5rem;
+    border: 1px solid #388E3C;
+}
+.current-target {
+    font-size: 1.1rem;
+    color: #4CAF50;
+    margin-left: 1rem;
+}
+
+@media (max-width:550px){
+  .symbol-row { flex-direction:column; align-items:flex-start; }
+  .symbol-row span, .symbol-row input { flex:1 0 100%; }
 }
