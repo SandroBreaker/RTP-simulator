@@ -5,20 +5,21 @@
 const simConfig = {
     // Parâmetros do Slot
     symbols: {
-        'ANCHOR': { icon: 'fa-anchor', weight: 75, mult3: 0.05, mult4: 0.1 },
-        'GEM': { icon: 'fa-gem', weight: 40, mult3: 0.3, mult4: 1 },
-        'COWBOY': { icon: 'fa-hat-cowboy', weight: 20, mult3: 1.2, mult4: 3 },
-        'SKULL': { icon: 'fa-skull-crossbones', weight: 5, mult3: 20, mult4: 50 }
+        // Valores iniciais são importantes para o build inicial, mas serão sobrepostos pelo DOM
+        'ANCHOR': { icon: 'fa-anchor', weight: 75, mult3: 0.1, mult4: 0.2 },
+        'GEM': { icon: 'fa-gem', weight: 40, mult3: 0.5, mult4: 0.8 },
+        'COWBOY': { icon: 'fa-hat-cowboy', weight: 15, mult3: 5, mult4: 15 },
+        'SKULL': { icon: 'fa-skull-crossbones', weight: 10, mult3: 50, mult4: 100 }
     },
-    symbolKeys: ['ANCHOR', 'GEM', 'COWBOY', 'SKULL'], // Array para facilitar iteração
+    symbolKeys: ['ANCHOR', 'GEM', 'COWBOY', 'SKULL'],
 
-    // Parâmetros da Simulação
+    // Parâmetros da Simulação (Valores que podem ser lidos do DOM)
     bet: 10,
     ROWS: 3,
     COLS: 4,
-    TARGET_RTP: 92,
-    RTP_PRECISION: 0.1,         // Diferença mínima para ajuste (0.1% de margem de erro)
-    ADJUSTMENT_STEP: 0.01,      // Ajuste fino para os multiplicadores
+    TARGET_RTP: 92, // LIDO DO INPUT
+    RTP_PRECISION: 0.1,
+    ADJUSTMENT_STEP: 0.01,
 
     // Parâmetros de Visualização (Controlados pelo DOM)
     numPlayers: 100,
@@ -27,38 +28,46 @@ const simConfig = {
 
 // --- VARIÁVEIS DE ESTADO E REFERÊNCIAS ---
 
-
-const canvas = document.getElementById('simCanvas');
-const ctx = canvas ? canvas.getContext('2d') : null; 
+const $ = selector => document.querySelector(selector); // Utilidade para o DOM
+const canvas = $('#simCanvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 let simulationTimeoutId = null;
 let currentRTP = 0;
 let iteration = 0;
 let isRunning = false;
-let weightedArr = []; 
+let weightedArr = [];
+
+// Referências do DOM
+const outputElement = $('#output');
+const toggleButton = $('#toggleSim');
+const rtpTargetInput = $('#rtp-target-input');
+const rtpTargetDisplay = $('#rtp-target');
+
 
 // --- FUNÇÕES DE INTERAÇÃO COM O DOM (VIEW) ---
-
-/**
- * Lê os inputs de jogadores e giros (parâmetros de visualização).
- */
-function readViewParamsFromDOM() {
-    simConfig.numPlayers = parseInt(document.getElementById('num-players').value) || simConfig.numPlayers; 
-    simConfig.spinsPerPlayer = parseInt(document.getElementById('spins-player').value) || simConfig.spinsPerPlayer; 
-}
 
 /**
  * LÊ OS PESOS E MULTIPLICADORES DO DOM E ATUALIZA simConfig.
  */
 function readGameParamsFromDOM() {
+    // 1. Lê RTP Alvo
+    simConfig.TARGET_RTP = parseFloat(rtpTargetInput.value) || 92;
+
+    // 2. Lê Parâmetros de Símbolos
     simConfig.symbolKeys.forEach(key => {
         const sym = simConfig.symbols[key];
         const keyLower = key.toLowerCase();
-        
-        sym.weight = parseFloat(document.getElementById(`w-${keyLower}`).value) || sym.weight;
-        sym.mult3 = parseFloat(document.getElementById(`m3-${keyLower}`).value) || sym.mult3;
-        sym.mult4 = parseFloat(document.getElementById(`m4-${keyLower}`).value) || sym.mult4;
+
+        // Usando o operador || para fallback, garantindo que seja sempre um número
+        sym.weight = parseFloat($(`#w-${keyLower}`).value) || sym.weight;
+        sym.mult3 = parseFloat($(`#m3-${keyLower}`).value) || sym.mult3;
+        sym.mult4 = parseFloat($(`#m4-${keyLower}`).value) || sym.mult4;
     });
+
+    // 3. Lê Parâmetros de Visualização
+    simConfig.numPlayers = parseInt($('#num-players').value) || simConfig.numPlayers;
+    simConfig.spinsPerPlayer = parseInt($('#spins-player').value) || simConfig.spinsPerPlayer;
 }
 
 /**
@@ -67,18 +76,20 @@ function readGameParamsFromDOM() {
 function updateDOMConfig() {
     simConfig.symbolKeys.forEach(key => {
         const sym = simConfig.symbols[key];
-        document.getElementById(`w-${key.toLowerCase()}`).value = sym.weight.toFixed(0);
-        document.getElementById(`m3-${key.toLowerCase()}`).value = sym.mult3.toFixed(4); 
-        document.getElementById(`m4-${key.toLowerCase()}`).value = sym.mult4.toFixed(4);
+        // Garantindo consistência de precisão na UI
+        $(`#w-${key.toLowerCase()}`).value = sym.weight.toFixed(0);
+        $(`#m3-${key.toLowerCase()}`).value = sym.mult3.toFixed(4);
+        $(`#m4-${key.toLowerCase()}`).value = sym.mult4.toFixed(4);
     });
-    
-    document.getElementById('rtp-target').textContent = simConfig.TARGET_RTP.toFixed(2) + '%';
+
+    rtpTargetDisplay.textContent = simConfig.TARGET_RTP.toFixed(2) + '%';
 }
 
 /**
  * Constrói o array ponderado de símbolos para o gerador de números aleatórios.
  */
 function buildWeightedArray() {
+    // ... (Mantido o código original) ...
     weightedArr = [];
     simConfig.symbolKeys.forEach(key => {
         const weight = Math.max(0, simConfig.symbols[key].weight);
@@ -88,17 +99,21 @@ function buildWeightedArray() {
     });
 }
 
-// --- FUNÇÕES DO MOTOR DO JOGO ---
+// --- FUNÇÕES DO MOTOR DO JOGO (mantidas iguais) ---
+// getRandomSymbol
+// findZigzagPaths
+// calculateWin
+// simulateRTP
+// simulatePlayersForPlot
 
+// ... (Resto das funções do motor mantidas iguais) ...
 function getRandomSymbol() {
     if (weightedArr.length === 0) return simConfig.symbolKeys[0];
     return weightedArr[Math.floor(Math.random() * weightedArr.length)];
 }
 
-/**
- * FUNÇÃO AUXILIAR: Encontra caminhos de vitória em zigue-zague (reutilizada do jogo).
- */
 function findZigzagPaths(results) {
+    // ... (Mantido o código original) ...
     const paths = [];
     const rows = simConfig.ROWS;
     const cols = simConfig.COLS;
@@ -138,11 +153,8 @@ function findZigzagPaths(results) {
     return paths;
 }
 
-/**
- * Calcula o ganho em uma única rodada (Lógica completa do jogo).
- * SUBSTITUÍDO: Agora inclui Horizontais, Diagonais e Zig-zag.
- */
 function calculateWin(results) {
+    // ... (Mantido o código original) ...
     let totalWin = 0;
     const rows = simConfig.ROWS;
     const cols = simConfig.COLS;
@@ -221,10 +233,8 @@ function calculateWin(results) {
     return totalWin;
 }
 
-/**
- * Simula um grande número de giros para obter um RTP preciso.
- */
 function simulateRTP(totalSpins) {
+    // ... (Mantido o código original) ...
     let totalWin = 0;
     const totalBet = totalSpins * simConfig.bet;
     
@@ -245,10 +255,8 @@ function simulateRTP(totalSpins) {
     return rtp;
 }
 
-/**
- * Simula jogadores para fins de visualização do gráfico (volatilidade).
- */
 function simulatePlayersForPlot() {
+    // ... (Mantido o código original) ...
     const playersData = [];
     
     for(let p = 0; p < simConfig.numPlayers; p++){
@@ -276,12 +284,14 @@ function simulatePlayersForPlot() {
     return playersData;
 }
 
+
 // --- FUNÇÃO DE OTIMIZAÇÃO E VISUALIZAÇÃO ---
 
 /**
  * Desenha as jornadas dos jogadores no Canvas.
  */
 function drawSimulation(playersData) {
+    // ... (Mantido o código original) ...
     if (!ctx) return; 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -345,55 +355,58 @@ function drawSimulation(playersData) {
     });
 }
 
+
 /**
  * Função principal que executa a simulação e o ajuste heurístico.
  */
 function runCycle() {
     if (!isRunning) return;
-    
+
     // 1. Otimização: Roda a simulação de RTP com grande número de giros.
-    buildWeightedArray(); 
-    const totalSpinsForRTP = 1000 * 50; 
+    readGameParamsFromDOM(); // Garante que qualquer alteração manual seja considerada
+    buildWeightedArray();
+    const totalSpinsForRTP = 1000 * 50;
     currentRTP = simulateRTP(totalSpinsForRTP);
-    
+
     // 2. Lógica de Ajuste Heurístico
-    const symbolToAdjust = simConfig.symbolKeys[simConfig.symbolKeys.length - 1]; 
+    const symbolToAdjust = simConfig.symbolKeys[simConfig.symbolKeys.length - 1];
     const symbolObj = simConfig.symbols[symbolToAdjust];
-    
+
     if (Math.abs(currentRTP - simConfig.TARGET_RTP) > simConfig.RTP_PRECISION) {
-        
+
         let delta = 0;
         if (currentRTP < simConfig.TARGET_RTP) {
+            // RTP abaixo do alvo, precisa AUMENTAR o multiplicador para subir o RTP
             delta = simConfig.ADJUSTMENT_STEP;
         } else {
+            // RTP acima do alvo, precisa DIMINUIR o multiplicador para baixar o RTP
             delta = -simConfig.ADJUSTMENT_STEP;
         }
 
+        // Aplica o ajuste, garantindo que o mult seja no mínimo 0.1
         symbolObj.mult4 = Math.max(0.1, symbolObj.mult4 + delta);
-        
+
         updateDOMConfig();
-        const output = document.getElementById('output');
-        output.textContent = 
+        outputElement.textContent =
             `--- Ajuste RTP Contínuo (Iteração ${iteration}) ---\n` +
             `RTP Atual: ${currentRTP.toFixed(4)}%\n` +
             `RTP Alvo: ${simConfig.TARGET_RTP}%\n` +
             `Ajuste: ${delta > 0 ? 'AUMENTANDO' : 'DIMINUINDO'} mult4\n` +
             `${symbolToAdjust} x4: ${symbolObj.mult4.toFixed(4)}`;
-            
+
     } else {
         stopSimulation(`✅ ALVO ATINGIDO: RTP Estabilizado em ${currentRTP.toFixed(4)}% após ${iteration} iterações.`);
         return;
     }
-    
+
     // 3. Visualização
-    readViewParamsFromDOM(); 
     const playersData = simulatePlayersForPlot();
     drawSimulation(playersData);
-    
+
     iteration++;
-    
+
     // 4. Agenda o Próximo Ciclo (Loop Recursivo)
-    simulationTimeoutId = setTimeout(runCycle, 100); 
+    simulationTimeoutId = setTimeout(runCycle, 100);
 }
 
 // --- FUNÇÕES DE CONTROLE ---
@@ -404,16 +417,23 @@ function stopSimulation(message) {
         simulationTimeoutId = null;
     }
     isRunning = false;
-    
-    const toggleButton = document.getElementById('toggleSim'); 
-    
-    if (toggleButton) { 
+
+    if (toggleButton) {
         toggleButton.textContent = "Rodar Simulação";
         toggleButton.classList.remove('running');
+        toggleButton.setAttribute('aria-checked', 'false'); // Acessibilidade: Parado
     }
-    
-    if (message) alert(message);
-    
+
+    if (message) {
+        outputElement.textContent += `\n${message}`; // Adiciona a mensagem ao log existente
+        if (message.includes('ALVO ATINGIDO')) {
+             console.log(message);
+        } else {
+             // Exibe um alerta somente se for parada manual
+             alert(message);
+        }
+    }
+
     console.log(message || "Simulação Contínua Parada.");
 }
 
@@ -421,28 +441,27 @@ function stopSimulation(message) {
 // --- Lógica de Inicialização ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    
-    const runButton = document.getElementById('toggleSim'); 
-    const stopButton = document.getElementById('stopSim'); 
-    
-    updateDOMConfig();
-    
-    if (stopButton) stopButton.remove();
 
-    if(runButton) {
-        runButton.addEventListener('click', () => {
-            const button = runButton;
+    // 1. Inicializa o DOM com os valores lidos da simConfig inicial
+    readGameParamsFromDOM(); // Lê os valores atuais no DOM (se forem diferentes do simConfig.js)
+    updateDOMConfig();
+
+    // 2. Configura o Listener do Botão
+    if(toggleButton) {
+        toggleButton.addEventListener('click', () => {
             if (!isRunning) {
                 // INICIAR
-                button.textContent = "Parar Simulação";
-                button.classList.add('running');
+                toggleButton.textContent = "Parar Simulação";
+                toggleButton.classList.add('running');
+                toggleButton.setAttribute('aria-checked', 'true'); // Acessibilidade: Rodando
                 isRunning = true;
                 iteration = 0;
-                
-                readGameParamsFromDOM(); 
-                
-                simConfig.TARGET_RTP = parseFloat(document.getElementById('rtp-target-input').value) || 92; 
-                
+
+                // Lê TUDO novamente (incluindo RTP e Parâmetros) antes de iniciar
+                readGameParamsFromDOM();
+
+                // Limpa o output e inicia o loop
+                outputElement.textContent = `Iniciando simulação com RTP Alvo: ${simConfig.TARGET_RTP}%\n---------------------`;
                 runCycle();
             } else {
                 // PARAR
@@ -450,4 +469,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // 3. Garante que o Canvas é inicializado corretamente após o carregamento
+    // Cria uma visualização inicial (placeholder) se o contexto estiver disponível
+    if (ctx) {
+        drawSimulation(simulatePlayersForPlot());
+    }
 });
+                 
