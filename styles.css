@@ -3,46 +3,42 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Fonte mais limpa e moderna para interfaces */
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Transições suaves para interações visuais */
     transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
 /* --- Layout Principal --- */
 body {
-    /* Fundo mais escuro para um look moderno (Dark Mode) */
     background: #0d0d0d;
     color: #e0e0e0;
-    padding: 1rem; /* Padding ligeiramente ajustado para melhor uso do espaço em mobile */
+    padding: 1rem;
     display: flex;
     justify-content: center;
-    min-height: 100vh; /* Ocupa a altura total para centralização e evitar barra de rolagem desnecessária */
+    min-height: 100vh; 
 }
 
 .container {
     width: 100%;
-    max-width: 580px; /* Levemente aumentado, mas ainda focado em telas menores */
+    max-width: 580px;
     background: #1a1a1a;
-    padding: 1.25rem; /* Padding aprimorado */
-    border-radius: 1rem; /* Borda mais suave e moderna */
-    /* Sombra mais elegante e sutil para profundidade */
+    padding: 1.25rem;
+    border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
 /* --- Títulos --- */
 h2 {
     text-align: center;
-    color: #64ffda; /* Cor de destaque mais moderna (cian claro) */
+    color: #64ffda;
     margin-bottom: 1.5rem;
-    font-size: 1.6rem; /* Tamanho maior para forte hierarquia */
+    font-size: 1.6rem;
     font-weight: 700;
 }
 
 /* --- Configurações dos Símbolos --- */
 .symbols-config {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
     margin-bottom: 1.5rem;
 }
@@ -50,68 +46,62 @@ h2 {
 .symbol-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* Espaçamento horizontal consistente */
-    /* Fundo ligeiramente mais claro para contraste com o container */
+    gap: 0.75rem;
     background: #242424;
     padding: 0.75rem;
-    border-radius: 0.5rem; /* Borda suave */
-    border: 1px solid #333; /* Borda sutil */
+    border-radius: 0.5rem;
+    border: 1px solid #333;
 }
 
 .symbol-row span {
-    flex: 1 1 auto; /* Flexibilidade aprimorada */
+    flex: 1 1 auto;
     font-weight: 600;
-    color: #ffc107; /* Amarelo (Gold) mais visível */
-    font-size: 1rem; /* Aumento para melhor leitura */
+    color: #ffc107;
+    font-size: 1rem;
     display: flex;
     align-items: center;
-    /* Evita quebra de linha desnecessária em nomes de símbolos */
     white-space: nowrap; 
 }
 
 .symbol-row span i {
     margin-right: 0.6rem;
-    color: #64ffda; /* Ícone com cor de destaque */
-    font-size: 1.1rem; /* Ícone mais visível */
+    color: #64ffda;
+    font-size: 1.1rem;
 }
 
 /* Estilo para destacar o símbolo que o algoritmo ajusta */
 .adjustable-symbol {
-    /* Borda mais perceptível com a cor de destaque */
     border: 2px solid #ffc107;
-    background: #2f271c; /* Fundo mais suave */
-    /* Sombra de destaque mais suave */
+    background: #2f271c;
     box-shadow: 0 0 12px #ffc10760;
 }
 
 .symbol-row input {
-    /* Largura mínima para ser clicável/tocável facilmente */
-    min-width: 60px; 
-    flex: 0 1 80px; /* Crescimento e encolhimento limitados */
-    padding: 0.6rem 0.4rem; /* Padding vertical aprimorado para toque (UX) */
+    min-width: 60px;
+    flex: 0 1 80px;
+    padding: 0.6rem 0.4rem;
     border-radius: 0.4rem;
     border: 1px solid #444;
     background: #333;
     color: #e0e0e0;
     text-align: center;
-    font-size: 1rem; /* Aumento para melhor leitura/digitação */
-    /* Transição de borda mais suave e rápida */
+    font-size: 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .symbol-row input:focus {
-    border-color: #64ffda; /* Cor de foco clara */
+    border-color: #64ffda;
     outline: none;
-    box-shadow: 0 0 0 2px #64ffda50; /* Anel de foco acessível */
+    box-shadow: 0 0 0 2px #64ffda50;
 }
 
 /* --- Botão Principal --- */
 #toggleSim {
     width: 100%;
-    padding: 1rem; /* Padding generoso para alvo de toque (UX) */
+    padding: 1rem;
     border: none;
     border-radius: 0.5rem;
-    background: #4CAF50; /* Cor Rodar (Ação Primária) */
+    background: #4CAF50;
     color: #fff;
     font-weight: bold;
     font-size: 1.1rem;
@@ -124,12 +114,11 @@ h2 {
 #toggleSim:hover {
     background: #388E3C;
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
-    /* Efeito sutil para feedback tátil */
     transform: translateY(-1px); 
 }
 
 #toggleSim.running {
-    background: #D32F2F; /* Cor Parar (Ação Secundária/Perigosa) */
+    background: #D32F2F;
 }
 
 #toggleSim.running:hover {
@@ -143,11 +132,11 @@ pre {
     padding: 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
-    max-height: 250px; /* Altura máxima ligeiramente maior */
+    max-height: 250px;
     white-space: pre-wrap;
-    font-size: 0.9rem; /* Leitura aprimorada */
+    font-size: 0.9rem;
     border: 1px solid #444;
-    color: #bbb; /* Cor de texto suave */
+    color: #bbb;
 }
 
 /* --- Área de Simulação/Canvas --- */
@@ -156,7 +145,7 @@ pre {
     border-radius: 0.75rem;
     background: #111111;
     width: 100%;
-    height: 300px; /* Altura ligeiramente reduzida para caber melhor na visualização do celular */
+    height: 300px;
     border: 1px solid #333;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
@@ -164,7 +153,6 @@ pre {
 /* --- Configuração de Alvo --- */
 .target-config {
     margin-bottom: 1.5rem;
-    /* Borda sutil e com a cor principal de destaque */
     border: 1px solid #64ffda; 
     padding: 0.75rem;
     border-radius: 0.5rem;
@@ -178,32 +166,28 @@ pre {
     font-weight: 600;
 }
 
-/* --- Adaptação para Dispositivos Móveis (UX/CX) --- */
-@media (max-width: 600px) { /* Uso de max-width mais flexível */
+/* --- Mobile --- */
+@media (max-width: 600px) {
+
     body {
-        padding: 0.75rem; /* Padding reduzido nas bordas da tela */
+        padding: 0.75rem;
     }
 
     .container {
-        border-radius: 0; /* Ocupa a largura total sem bordas arredondadas em telas muito pequenas */
+        border-radius: 0;
     }
 
+    /* 🔥 Correção principal: NÃO empilhar → mantém row */
     .symbol-row {
-        flex-direction: column; /* Empilha os elementos para melhor legibilidade em telas estreitas */
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
     }
 
-    .symbol-row span {
-        margin-bottom: 0.5rem; /* Espaço entre o nome e o input */
-        width: 100%; /* Ocupa a largura total disponível */
-        justify-content: flex-start;
-        font-size: 1.05rem; /* Aumento sutil */
-    }
-
+    /* Inputs não esticam errado no mobile */
     .symbol-row input {
-        flex: 1 1 100%; /* Ocupa a largura total para fácil toque/digitação */
-        text-align: left;
-        padding: 0.8rem 0.6rem; /* Padding maior para alvo de toque (UX) */
-        min-width: auto;
+        flex: 0 1 80px;
+        text-align: center;
+        padding: 0.6rem 0.4rem;
+        min-width: 60px;
     }
-  }
+}
