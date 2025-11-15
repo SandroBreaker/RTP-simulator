@@ -16,13 +16,13 @@ const simConfig = {
     bet: 10,
     ROWS: 3,
     COLS: 4,
-    TARGET_RTP: 92,
+    TARGET_RTP: 96,
     RTP_PRECISION: 0.1,         // Diferença mínima para ajuste (0.1% de margem de erro)
     ADJUSTMENT_STEP: 0.01,      // Ajuste fino para os multiplicadores
 
     // Parâmetros de Visualização (Controlados pelo DOM)
     numPlayers: 100,
-    spinsPerPlayer: 20
+    spinsPerPlayer: 50
 };
 
 // --- VARIÁVEIS DE ESTADO E REFERÊNCIAS ---
