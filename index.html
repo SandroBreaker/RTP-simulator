@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Slot Otimização RTP</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Motor de Otimização de RTP</h2>
+
+  <div class="target-config symbol-row">
+    <span>RTP Alvo (%)</span>
+    <input type="number" id="rtp-target-input" value="92.0" step="0.1" placeholder="RTP Alvo"> 
+    <span id="rtp-target" class="current-target">92.0%</span>
+  </div>
+
+  <div class="symbols-config">
+    
+    <div class="symbol-row">
+      <span><i class="fa-solid fa-anchor"></i> Anchor</span>
+      <input type="number" id="w-anchor" value="75" placeholder="Peso">
+      <input type="number" id="m3-anchor" value="0.1" step="0.1" placeholder="x3">
+      <input type="number" id="m4-anchor" value="0.2" step="0.1" placeholder="x4">
+    </div>
+
+    <div class="symbol-row">
+      <span><i class="fa-solid fa-gem"></i> Gem</span>
+      <input type="number" id="w-gem" value="40" placeholder="Peso"> 
+      <input type="number" id="m3-gem" value="0.5" step="0.1" placeholder="x3">
+      <input type="number" id="m4-gem" value="0.8" step="0.1" placeholder="x4">
+    </div>
+
+    <div class="symbol-row">
+      <span><i class="fa-solid fa-hat-cowboy"></i> Cowboy</span>
+      <input type="number" id="w-cowboy" value="15" placeholder="Peso">
+      <input type="number" id="m3-cowboy" value="5" step="0.1" placeholder="x3">
+      <input type="number" id="m4-cowboy" value="15" step="0.1" placeholder="x4">
+    </div>
+
+    <div class="symbol-row adjustable-symbol">
+      <span><i class="fa-solid fa-skull-crossbones"></i> Skull (Ajuste)</span>
+      <input type="number" id="w-skull" value="10" placeholder="Peso">
+      <input type="number" id="m3-skull" value="50" step="1" placeholder="x3">
+      <input type="number" id="m4-skull" value="100" step="1" placeholder="x4">
+    </div>
+  </div>
+
+  <div class="symbol-row">
+    <span>Nº Giros p/ Jogador (Visualização)</span>
+    <input type="number" id="spins-player" value="20" placeholder="Giros"> 
+  </div>
+   <div class="symbol-row">
+    <span>Nº Jogadores (Visualização)</span>
+    <input type="number" id="num-players" value="100" placeholder="Nº jogadores"> 
+  </div>
+
+
+  <button id="toggleSim">Rodar Simulação</button>
+  <pre id="output"></pre>
+  <canvas id="simCanvas" width="1000" height="500"></canvas>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
