@@ -1,69 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Slot Otimização RTP</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>Motor de Otimização de RTP - Test Slot</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" 
+          integrity="sha512-DTOQO9RMOeK9E0jsXlDYO99yTj+Hl0K2eM/u5tV6f1sP+t71E86s6A77hWqG1oE3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="container">
-  <h2>Motor de Otimização de RTP</h2>
+<div class="container" role="main">
+    <h2>Motor de Otimização de RTP</h2>
 
-  <div class="target-config symbol-row">
-    <span>RTP Alvo (%)</span>
-    <input type="number" id="rtp-target-input" value="92.0" step="0.1" placeholder="RTP Alvo"> 
-    <span id="rtp-target" class="current-target">92.0%</span>
-  </div>
+    <div class="target-config symbol-row" role="group" aria-labelledby="rtp-target-label">
+        <span id="rtp-target-label"><i class="fa-solid fa-bullseye"></i> RTP Alvo (%)</span>
+        <input type="number" id="rtp-target-input" value="92.0" step="0.1" placeholder="RTP Alvo" 
+               aria-label="Valor percentual do RTP alvo" title="Valor percentual do RTP alvo"> 
+        <span id="rtp-target" class="current-target" role="status" aria-live="polite">92.0%</span>
+    </div>
 
-  <div class="symbols-config">
+    <div class="symbols-config" role="list">
+        
+        <div class="symbol-row" role="listitem">
+            <span><i class="fa-solid fa-anchor"></i> Anchor</span>
+            <input type="number" id="w-anchor" value="75" placeholder="Peso" aria-label="Peso do símbolo Anchor" title="Peso (frequência) do símbolo Anchor">
+            <input type="number" id="m3-anchor" value="0.1" step="0.1" placeholder="x3" aria-label="Multiplicador 3 símbolos Anchor" title="Multiplicador para 3 símbolos Anchor">
+            <input type="number" id="m4-anchor" value="0.2" step="0.1" placeholder="x4" aria-label="Multiplicador 4 símbolos Anchor" title="Multiplicador para 4 símbolos Anchor">
+        </div>
+
+        <div class="symbol-row" role="listitem">
+            <span><i class="fa-solid fa-gem"></i> Gem</span>
+            <input type="number" id="w-gem" value="40" placeholder="Peso" aria-label="Peso do símbolo Gem"> 
+            <input type="number" id="m3-gem" value="0.5" step="0.1" placeholder="x3" aria-label="Multiplicador 3 símbolos Gem">
+            <input type="number" id="m4-gem" value="0.8" step="0.1" placeholder="x4" aria-label="Multiplicador 4 símbolos Gem">
+        </div>
+
+        <div class="symbol-row" role="listitem">
+            <span><i class="fa-solid fa-hat-cowboy"></i> Cowboy</span>
+            <input type="number" id="w-cowboy" value="15" placeholder="Peso" aria-label="Peso do símbolo Cowboy">
+            <input type="number" id="m3-cowboy" value="5" step="0.1" placeholder="x3" aria-label="Multiplicador 3 símbolos Cowboy">
+            <input type="number" id="m4-cowboy" value="15" step="0.1" placeholder="x4" aria-label="Multiplicador 4 símbolos Cowboy">
+        </div>
+
+        <div class="symbol-row adjustable-symbol" role="listitem" aria-live="polite">
+            <span><i class="fa-solid fa-skull-crossbones"></i> Skull (Ajuste)</span>
+            <input type="number" id="w-skull" value="10" placeholder="Peso" aria-label="Peso do símbolo Skull">
+            <input type="number" id="m3-skull" value="50" step="1" placeholder="x3" aria-label="Multiplicador 3 símbolos Skull">
+            <input type="number" id="m4-skull" value="100" step="1" placeholder="x4" aria-label="Multiplicador 4 símbolos Skull">
+        </div>
+    </div>
     
-    <div class="symbol-row">
-      <span><i class="fa-solid fa-anchor"></i> Anchor</span>
-      <input type="number" id="w-anchor" value="75" placeholder="Peso">
-      <input type="number" id="m3-anchor" value="0.1" step="0.1" placeholder="x3">
-      <input type="number" id="m4-anchor" value="0.2" step="0.1" placeholder="x4">
+    <div class="symbols-config">
+        <div class="symbol-row">
+            <span><i class="fa-solid fa-gauge-high"></i> Giros p/ Jogador (Visualização)</span>
+            <input type="number" id="spins-player" value="20" placeholder="Giros" aria-label="Número de giros por jogador para visualização"> 
+        </div>
+        <div class="symbol-row">
+            <span><i class="fa-solid fa-users"></i> Nº Jogadores (Visualização)</span>
+            <input type="number" id="num-players" value="100" placeholder="Nº jogadores" aria-label="Número de jogadores para visualização"> 
+        </div>
     </div>
 
-    <div class="symbol-row">
-      <span><i class="fa-solid fa-gem"></i> Gem</span>
-      <input type="number" id="w-gem" value="40" placeholder="Peso"> 
-      <input type="number" id="m3-gem" value="0.5" step="0.1" placeholder="x3">
-      <input type="number" id="m4-gem" value="0.8" step="0.1" placeholder="x4">
-    </div>
 
-    <div class="symbol-row">
-      <span><i class="fa-solid fa-hat-cowboy"></i> Cowboy</span>
-      <input type="number" id="w-cowboy" value="15" placeholder="Peso">
-      <input type="number" id="m3-cowboy" value="5" step="0.1" placeholder="x3">
-      <input type="number" id="m4-cowboy" value="15" step="0.1" placeholder="x4">
-    </div>
-
-    <div class="symbol-row adjustable-symbol">
-      <span><i class="fa-solid fa-skull-crossbones"></i> Skull (Ajuste)</span>
-      <input type="number" id="w-skull" value="10" placeholder="Peso">
-      <input type="number" id="m3-skull" value="50" step="1" placeholder="x3">
-      <input type="number" id="m4-skull" value="100" step="1" placeholder="x4">
-    </div>
-  </div>
-
-  <div class="symbol-row">
-    <span>Nº Giros p/ Jogador (Visualização)</span>
-    <input type="number" id="spins-player" value="20" placeholder="Giros"> 
-  </div>
-   <div class="symbol-row">
-    <span>Nº Jogadores (Visualização)</span>
-    <input type="number" id="num-players" value="100" placeholder="Nº jogadores"> 
-  </div>
-
-
-  <button id="toggleSim">Rodar Simulação</button>
-  <pre id="output"></pre>
-  <canvas id="simCanvas" width="1000" height="500"></canvas>
+    <button id="toggleSim" role="switch" aria-checked="false" aria-controls="output simCanvas">Rodar Simulação</button>
+    
+    <pre id="output" role="log" aria-live="polite" aria-atomic="true"></pre>
+    
+    <canvas id="simCanvas" width="1000" height="500" role="img" aria-label="Gráfico de volatilidade da simulação"></canvas>
 </div>
 
 <script src="app.js"></script>
 </body>
 </html>
+  
